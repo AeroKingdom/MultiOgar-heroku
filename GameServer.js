@@ -92,8 +92,8 @@ function GameServer() {
         borderHeight: 14142.135623730952, // Map border size (Vanilla value: 14142)
 
         /** FOOD **/
-        foodMinSize: 10, // Minimum food size (vanilla 10)
-        foodMaxSize: 20, // Maximum food size (vanilla 20)
+        foodMinSize: 25, // Minimum food size (vanilla 10)
+        foodMaxSize: 25, // Maximum food size (vanilla 20)
         foodMinAmount: 1000, // Minimum food cells on the map
         foodMaxAmount: 2000, // Maximum food cells on the map
         foodSpawnAmount: 30, // The number of food to spawn per interval
@@ -118,14 +118,14 @@ function GameServer() {
         ejectVelocity: 780, // Velocity of ejecting cells (speed and distance)
 
         /** PLAYERS **/
-        playerMinSize: 31.6227766017, // Minimum size a player cell can decay too. (vanilla: val*val/100 = 10 mass)
-        playerMaxSize: 1500, // Maximum size a player cell can achive before auto-splitting. (vanilla: mass = val*val/100 = 22500 mass)
+        playerMinSize: 50, // Minimum size a player cell can decay too. (vanilla: val*val/100 = 10 mass)
+        playerMaxSize: 3500, // Maximum size a player cell can achive before auto-splitting. (vanilla: mass = val*val/100 = 22500 mass)
         playerMinSplitSize: 59.16079783, // Mimimum size a player cell has to be to split. (vanilla: mass = val*val/100 = 35 mass)
         playerMinEjectSize: 59.16079783, // Minimum size a player cell has to be to eject mass. (vanilla: mass = val*val/100 = 35 mass)
         playerStartSize: 31.6227766017, // Start size of the player cell. (vanilla: mass = val*val/100 = 10 mass)
         playerMaxCells: 16, // Maximum cells a player is allowed to have.
-        playerSpeed: 1, // Player speed multiplier (1 = normal speed, 2 = twice the normal speed)
-        playerDecayRate: 0.998, // Amount of player cell size lost per second
+        playerSpeed: 2, // Player speed multiplier (1 = normal speed, 2 = twice the normal speed)
+        playerDecayRate: 0.5, // Amount of player cell size lost per second
         playerDecayCap: 0, // Maximum mass a cell can have before it's decayrate multiplies by 10. (0 to disable)
         playerRecombineTime: 30, // Base time in seconds before a cell is allowed to recombine
         playerDisconnectTime: -1, // Time in seconds before a disconnected player's cell is removed (Set to -1 to never remove)
