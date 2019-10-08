@@ -1,69 +1,39 @@
-'use strict';
-/*
- * Simple BinaryWriter is a minimal tool to write binary stream with unpredictable size.
- * Useful for binary serialization.
- *
- * Copyright (c) 2016 Barbosik https://github.com/Barbosik
- * License: Apache License, Version 2.0
- */
-
-const oldNode = parseInt(process.version[1]) < 6;
-const allocMax = 1048576;
-
-global.sharedBuffer = oldNode ? new Buffer(allocMax) : Buffer.allocUnsafe(allocMax);
-global.allocLength = 0;
-
-function BinaryWriter() {
-    allocLength = 0;
+class SetBorder {
+    constructor(playerTracker, border, gameType, serverName) {
+        this.playerTracker = playerTracker;
+        this.border = border;
+        this.gameType = gameType;
+        this.serverName = serverName;
+    }
+    build(protocol) {
+        var scrambleX = this.playerTracker.scrambleX;
+        var scrambleY = this.playerTracker.scrambleY;
+        if (this.gameType == null) {
+            var buffer = Buffer.alloc(33);
+            buffer.writeUInt8(0x40, 0, true);
+            buffer.writeDoubleLE(this.border.minx + scrambleX, 1, true);
+            buffer.writeDoubleLE(this.border.miny + scrambleY, 9, true);
+            buffer.writeDoubleLE(this.border.maxx + scrambleX, 17, true);
+            buffer.writeDoubleLE(this.border.maxy + scrambleY, 25, true);
+            return buffer;
+        }
+        var BinaryWriter = require("./BinaryWriter");
+        var writer = new BinaryWriter();
+        writer.writeUInt8(0x40); // Packet ID
+        writer.writeDouble(this.border.minx + scrambleX);
+        writer.writeDouble(this.border.miny + scrambleY);
+        writer.writeDouble(this.border.maxx + scrambleX);
+        writer.writeDouble(this.border.maxy + scrambleY);
+        writer.writeUInt32(this.gameType >> 0);
+        var name = this.serverName;
+        if (name == null)
+            name = "";
+        if (protocol < 6)
+            writer.writeStringZeroUnicode(name);
+        else
+            writer.writeStringZeroUtf8(name);
+        return writer.toBuffer();
+    }
 }
 
-module.exports = BinaryWriter;
-
-BinaryWriter.prototype.writeUInt8 = function(value) {
-    sharedBuffer.writeUInt8(value, allocLength++, true);
-};
-
-BinaryWriter.prototype.writeUInt16 = function(value) {
-    sharedBuffer.writeUInt16LE(value, allocLength, true);
-    allocLength += 2;
-};
-
-BinaryWriter.prototype.writeUInt32 = function(value) {
-    sharedBuffer.writeUInt32LE(value, allocLength, true);
-    allocLength += 4;
-};
-
-BinaryWriter.prototype.writeFloat = function(value) {
-    sharedBuffer.writeFloatLE(value, allocLength, true);
-    allocLength += 4;
-};
-
-BinaryWriter.prototype.writeDouble = function(value) {
-    sharedBuffer.writeDoubleLE(value, allocLength, true);
-    allocLength += 8;
-};
-
-BinaryWriter.prototype.writeBytes = function(data) {
-    data.copy(sharedBuffer, allocLength, 0, data.length);
-    allocLength += data.length;
-};
-
-BinaryWriter.prototype.writeStringZeroUtf8 = function(value) {
-    var length = Buffer.byteLength(value, 'utf8');
-    sharedBuffer.write(value, allocLength, 'utf8');
-    allocLength += length;
-    this.writeUInt8(0);
-};
-
-BinaryWriter.prototype.writeStringZeroUnicode = function(value) {
-    var length = Buffer.byteLength(value, 'ucs2');
-    sharedBuffer.write(value, allocLength, 'ucs2');
-    allocLength += length;
-    this.writeUInt16(0);
-};
-
-BinaryWriter.prototype.toBuffer = function() {
-    var newBuf = oldNode ? new Buffer(allocLength) : Buffer.allocUnsafe(allocLength);
-    sharedBuffer.copy(newBuf, 0, 0, allocLength);
-    return newBuf;
-};
+module.exports = SetBorder;
